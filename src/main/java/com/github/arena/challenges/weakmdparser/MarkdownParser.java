@@ -1,23 +1,22 @@
 package com.github.arena.challenges.weakmdparser;
 
+import com.github.arena.challenges.weakmdparser.tag.LiTagProcessor;
+import com.github.arena.challenges.weakmdparser.tag.PTagProcessor;
+import com.github.arena.challenges.weakmdparser.tag.PhTagProcessor;
+import com.github.arena.challenges.weakmdparser.tag.TagProcessor;
+
 public class MarkdownParser {
 
-   public String parse(String markdown) {
+    public String parse(String markdown) {
         String[] lines = markdown.split("\n");
         StringBuilder result = new StringBuilder();
         boolean activeList = false;
 
         for (String line : lines) {
+            TagProcessor tag = new PhTagProcessor(new LiTagProcessor(new PTagProcessor(null)));
 
-            String theLine = ph(line);
+            String theLine = tag.parse(line);
 
-            if (theLine == null) {
-                theLine = li(line);
-            }
-
-            if (theLine == null) {
-                theLine = p(line);
-            }
 
             if (theLine.matches("(<li>).*") && !theLine.matches("(<h).*") && !theLine.matches("(<p>).*") && !activeList) {
                 activeList = true;
@@ -39,42 +38,4 @@ public class MarkdownParser {
         return result.toString();
     }
 
-    private String ph(String markdown) {
-        int count = 0;
-
-        for (int i = 0; i < markdown.length() && markdown.charAt(i) == '#'; i++) {
-            count++;
-        }
-
-        if (count == 0) {
-            return null;
-        }
-
-        return "<h" + count + ">" + markdown.substring(count + 1) + "</h" + count + ">";
-    }
-
-    private String li(String markdown) {
-        if (markdown.startsWith("*")) {
-            String skipAsterisk = markdown.substring(2);
-            String listItemString = parseSomeSymbols(skipAsterisk);
-            return "<li>" + listItemString + "</li>";
-        }
-
-        return null;
-    }
-
-    private String p(String markdown) {
-        return "<p>" + parseSomeSymbols(markdown) + "</p>";
-    }
-
-    private String parseSomeSymbols(String markdown) {
-
-        String lookingFor = "__(.+)__";
-        String update = "<strong>$1</strong>";
-        String workingOn = markdown.replaceAll(lookingFor, update);
-
-        lookingFor = "_(.+)_";
-        update = "<em>$1</em>";
-        return workingOn.replaceAll(lookingFor, update);
-    }
 }
