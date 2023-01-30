@@ -1,21 +1,21 @@
-package com.github.arena.challenges.weakmdparser.tag;
+package com.github.arena.challenges.weakmdparser.tagprocessor;
 
-import com.github.arena.challenges.weakmdparser.line.Line;
+import com.github.arena.challenges.weakmdparser.line.AbstractLine;
 import com.github.arena.challenges.weakmdparser.line.OtherLine;
 
-public class PTagProcessor extends TagProcessor {
+public class PTagProcessor extends AbstractTagProcessor {
 
     public static final String OPENING_TAG = "<p>";
     public static final String CLOSING_TAG = "</p>";
 
-    public PTagProcessor(TagProcessor nextTag) {
+    public PTagProcessor(AbstractTagProcessor nextTag) {
         super(nextTag);
     }
 
     @Override
-    protected Line processMarkdown(String markdown, Boolean activeList) {
-        String result = parseUnderscore(markdown);
-        return new OtherLine(activeList, result);
+    protected AbstractLine processMarkdown(String markdown) {
+        final String result = parseUnderscore(markdown);
+        return new OtherLine(result);
     }
 
     @Override

@@ -1,16 +1,21 @@
 package com.github.arena.challenges.weakmdparser.line;
 
-public class LiLine extends Line {
+public class LiLine extends AbstractLine {
 
-    public LiLine(Boolean active, String rawLine) {
-        super(active, rawLine);
+    public LiLine(String rawLine) {
+        super(rawLine);
     }
 
     @Override
-    public String processLine() {
-        if (getActive()) return getLineWithTags();
-
-        this.setActive(true);
-        return UL_OPENING_TAG + getLineWithTags();
+    public void processLine(String openingTag, String closingTag, boolean initialActive) {
+        lineWithTags = openingTag + this.getRawLine() + closingTag;
+        finalLine = initialActive ? lineWithTags : UL_OPENING_TAG + lineWithTags;
     }
+
+    @Override
+    public Boolean nextActiveListValue() {
+        return true;
+    }
+
+
 }
