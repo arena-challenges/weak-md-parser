@@ -1,5 +1,7 @@
 package com.github.arena.challenges.weakmdparser.tag;
 
+import com.github.arena.challenges.weakmdparser.line.Line;
+
 public abstract class TagProcessor {
     private static final String REGEX_FOR_DOUBLE_UNDERSCORE = "__(.+)__";
     private static final String REGEX_FOR_SINGLE_UNDERSCORE = "_(.+)_";
@@ -12,31 +14,27 @@ public abstract class TagProcessor {
         this.nextTag = nextTag;
     }
 
-    public String parse(String markdown) {
-        if (shouldPassToNextTag(markdown)) {
-            return nextTag.parse(markdown);
-        }
-        return openingTag() + processMarkdown(markdown) + closingTag();
+    public Line parseLine(String markdown, Boolean activeList) {
+        if (shouldPassToNextProcessor(markdown)) return nextTag.parseLine(markdown, activeList);
+        Line line = processMarkdown(markdown, activeList);
+        line.setLineWithTags(openingTag(markdown) + line.getRawLine() + closingTag(markdown));
+        return line;
     }
-
-    protected abstract String processMarkdown(String markdown);
 
     protected String parseUnderscore(String markdown) {
-        String workingOn = replaceRegexWithTag(markdown, REGEX_FOR_DOUBLE_UNDERSCORE, TAG_STRONG);
-        return replaceRegexWithTag(workingOn, REGEX_FOR_SINGLE_UNDERSCORE, TAG_EM);
+        return markdown.replaceAll(REGEX_FOR_DOUBLE_UNDERSCORE, TAG_STRONG)
+                .replaceAll(REGEX_FOR_SINGLE_UNDERSCORE, TAG_EM);
     }
 
-    protected String replaceRegexWithTag(String markdown, String regex, String tag) {
-        return markdown.replaceAll(regex, tag);
-    }
-
-    protected boolean shouldPassToNextTag(String markdown) {
+    protected boolean shouldPassToNextProcessor(String markdown) {
         return nextTag != null && !shouldProcess(markdown);
     }
 
+    protected abstract Line processMarkdown(String markdown, Boolean activeLine);
+
     protected abstract boolean shouldProcess(String markdown);
 
-    protected abstract String openingTag();
+    protected abstract String openingTag(String markdown);
 
-    protected abstract String closingTag();
+    protected abstract String closingTag(String markdown);
 }

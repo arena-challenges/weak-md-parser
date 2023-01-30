@@ -1,5 +1,8 @@
 package com.github.arena.challenges.weakmdparser.tag;
 
+import com.github.arena.challenges.weakmdparser.line.LiLine;
+import com.github.arena.challenges.weakmdparser.line.Line;
+
 public class LiTagProcessor extends TagProcessor {
 
     public static final String OPENING_TAG = "<li>";
@@ -10,9 +13,10 @@ public class LiTagProcessor extends TagProcessor {
     }
 
     @Override
-    protected String processMarkdown(String markdown) {
+    protected Line processMarkdown(String markdown, Boolean activeList) {
         String skipAsterisk = markdown.substring(2);
-        return parseUnderscore(skipAsterisk);
+        String result = parseUnderscore(skipAsterisk);
+        return new LiLine(activeList, result);
     }
 
     @Override
@@ -21,12 +25,12 @@ public class LiTagProcessor extends TagProcessor {
     }
 
     @Override
-    protected String openingTag() {
+    protected String openingTag(String markdown) {
         return OPENING_TAG;
     }
 
     @Override
-    protected String closingTag() {
+    protected String closingTag(String markdown) {
         return CLOSING_TAG;
     }
 }

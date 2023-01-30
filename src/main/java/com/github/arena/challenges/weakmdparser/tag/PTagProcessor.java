@@ -1,5 +1,8 @@
 package com.github.arena.challenges.weakmdparser.tag;
 
+import com.github.arena.challenges.weakmdparser.line.Line;
+import com.github.arena.challenges.weakmdparser.line.OtherLine;
+
 public class PTagProcessor extends TagProcessor {
 
     public static final String OPENING_TAG = "<p>";
@@ -10,8 +13,9 @@ public class PTagProcessor extends TagProcessor {
     }
 
     @Override
-    protected String processMarkdown(String markdown) {
-        return parseUnderscore(markdown);
+    protected Line processMarkdown(String markdown, Boolean activeList) {
+        String result = parseUnderscore(markdown);
+        return new OtherLine(activeList, result);
     }
 
     @Override
@@ -20,12 +24,12 @@ public class PTagProcessor extends TagProcessor {
     }
 
     @Override
-    protected String openingTag() {
+    protected String openingTag(String markdown) {
         return OPENING_TAG;
     }
 
     @Override
-    protected String closingTag() {
+    protected String closingTag(String markdown) {
         return CLOSING_TAG;
     }
 
