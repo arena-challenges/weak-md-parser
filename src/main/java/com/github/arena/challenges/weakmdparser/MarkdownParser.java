@@ -22,13 +22,13 @@ public final class MarkdownParser {
         boolean activeList = false;
 
         for (final String line : lines) {
-            activeList = processLine(result, activeList, tagProcessor, line);
+            activeList = processLine(result, activeList, line);
         }
 
         return activeList ? result.append(AbstractLine.UL_CLOSING_TAG).toString() : result.toString();
     }
 
-    private boolean processLine(StringBuilder result, boolean activeList, AbstractTagProcessor tagProcessor, String line) {
+    private boolean processLine(StringBuilder result, boolean activeList, String line) {
         final AbstractLine resultLine = tagProcessor.parseLine(line, activeList);
 
         result.append(resultLine.getFinalLine());
